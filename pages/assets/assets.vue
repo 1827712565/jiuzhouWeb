@@ -2,24 +2,31 @@
   <view class="page-container">
     <!-- 顶部资产卡片 -->
     <view class="asset-card">
-      <view class="card-header">
+      <view class="card-header" @click="showInfoLayer">
         <text class="title">账户总资产折合(USDT)</text>
         <text class="info-icon">i</text>
       </view>
       <text class="total-amount">{{ totalAssets }}</text>
       <view class="action-buttons">
         <view class="action-item" @click="handleDeposit">
-          <image class="action-icon" src="/static/iconfont/deposit.svg" mode="aspectFit"/>
-          <text class="action-text">充币</text>
+          <image class="action-icon" src="/static/iconfont/cz.svg" mode="aspectFit"/>
+          <text class="action-text">充值</text>
         </view>
         <view class="action-item" @click="handleWithdraw">
-          <image class="action-icon" src="/static/iconfont/withdraw.svg" mode="aspectFit"/>
-          <text class="action-text">提币</text>
+          <image class="action-icon" src="/static/iconfont/tx.svg" mode="aspectFit"/>
+          <text class="action-text">提现</text>
         </view>
         <view class="action-item" @click="handleTransfer">
-          <image class="action-icon" src="/static/iconfont/transfer.svg" mode="aspectFit"/>
-          <text class="action-text">闪兑</text>
+          <image class="action-icon" src="/static/iconfont/dh.svg" mode="aspectFit"/>
+          <text class="action-text">兑换</text>
         </view>
+      </view>
+    </view>
+
+    <!-- 资产说明图层 -->
+    <view class="mask" v-show="isShowLayer" @click="hideInfoLayer">
+      <view class="mask-content">
+        将您账户中的所有资产（包括加密货币、法币、代币等）按照当前市场价格统一换算为 USDT（Tether） 的价值总和。
       </view>
     </view>
 
@@ -63,7 +70,8 @@ export default {
           valueInUSDT: '0'
         },
 
-      ]
+      ],
+      isShowLayer: false
     }
   },
   onShow() {
@@ -105,18 +113,24 @@ export default {
     },
     handleWithdraw() {
       uni.navigateTo({
-        url: '/pages/withdraw/withdraw'
+        url: '/pages/deposit/withdraw'
       })
     },
     handleTransfer() {
       uni.navigateTo({
-        url: '/pages/transfer/transfer'
+        url: '/pages/deposit/transfer'
       })
     },
     goToDetail(asset) {
       uni.navigateTo({
         url: `/pages/asset-detail/asset-detail?symbol=${asset.symbol}`
       })
+    },
+    showInfoLayer() {
+      this.isShowLayer = true;
+    },
+    hideInfoLayer() {
+      this.isShowLayer = false;
     }
   }
 }
@@ -165,6 +179,8 @@ export default {
     color: #ffffff;
     font-weight: 500;
     margin-bottom: 32rpx;
+    display: flex;
+    justify-content: center;
   }
 }
 
@@ -274,6 +290,30 @@ export default {
   .page-container {
     min-height: calc(100vh - constant(safe-area-inset-bottom));
     min-height: calc(100vh - env(safe-area-inset-bottom));
+  }
+}
+
+.mask {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 9;
+  
+  .mask-content {
+    width: 70%;
+    height: 20%;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: #2a2a2a;
+    padding: 40rpx;
+    border-radius: 16rpx;
+    color: #fff;
+    font-size: 28rpx;
   }
 }
 </style> 

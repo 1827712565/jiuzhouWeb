@@ -194,6 +194,25 @@ export default {
           setTimeout(() => {
             uni.navigateBack();
           }, 1500);
+        } else if (res.data.code === 1) {
+          // 需要实名认证的情况
+          uni.showModal({
+            title: '提示',
+            content: res.data.message || '请先完成实名认证',
+            confirmText: '去认证',
+            success: (result) => {
+              if (result.confirm) {
+                uni.navigateTo({
+                  url: '/pages/authentication/authentication'
+                });
+              }
+            }
+          });
+        } else {
+          uni.showToast({
+            title: res.data.message || '提交失败',
+            icon: 'none'
+          });
         }
       });
     },
@@ -246,7 +265,7 @@ export default {
   }
 
   .textarea {
-    width: 100%;
+    width: 94%;
     height: 160rpx;
     background: #363636;
     border-radius: 8rpx;

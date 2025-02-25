@@ -44,9 +44,19 @@
           <text class="iconfont icon-right">></text>
         </view>
       </view>
+      <!-- 银行卡 -->
+      <view class="menu-item" @click="bankcard">
+              <view class="menu-left">
+                <image class="menu-icon" src="/static/iconfont/yhk.svg" mode="aspectFit"/>
+                <text class="menu-title">银行卡管理</text>
+              </view>
+          <view class="menu-right">
+             <text class="iconfont icon-right">></text>
+          </view>
+       </view>
 
       <!-- 手机号码 -->
-      <view class="menu-item" @click="bindPhone">
+      <!-- <view class="menu-item" @click="bindPhone">
         <view class="menu-left">
           <image class="menu-icon" src="/static/iconfont/phone.svg" mode="aspectFit"/>
           <text class="menu-title">{{ $t('phoneNumber') }}</text>
@@ -57,10 +67,10 @@
           </text>
           <text class="iconfont icon-right">></text>
         </view>
-      </view>
+      </view> -->
 
       <!-- 邮箱 -->
-      <view class="menu-item" @click="goToBindEmail">
+      <!-- <view class="menu-item" @click="goToBindEmail">
         <view class="menu-left">
           <image class="menu-icon" src="/static/iconfont/email.svg" mode="aspectFit"/>
           <text class="menu-title">{{ $t('email') }}</text>
@@ -71,7 +81,7 @@
           </text>
           <text class="iconfont icon-right">></text>
         </view>
-      </view>
+      </view> -->
 
       <!-- 帮助中心 -->
       <view class="menu-item" @click="goToHelpCenter">
@@ -95,6 +105,18 @@
           <text class="iconfont icon-right">></text>
         </view>
       </view>
+
+      <!-- 设置 -->
+      <view class="menu-item" @click="setting">
+        <view class="menu-left">
+          <image class="menu-icon" src="/static/iconfont/ss.svg" mode="aspectFit"/>
+          <text class="menu-title">设置</text>
+        </view>
+        <view class="menu-right">
+          <text class="iconfont icon-right">></text>
+        </view>
+      </view>
+
     </view>
 
        <!-- 退出登录 -->
@@ -206,11 +228,11 @@ export default {
 
     },
 
-    bindPhone() {
-      uni.navigateTo({
-        url: '/pages/bind-phone/bind-phone'
-      });
-    },
+    // bindPhone() {
+    //   uni.navigateTo({
+    //     url: '/pages/bind-phone/bind-phone'
+    //   });
+    // },
     goToBindEmail() {
       uni.navigateTo({
         url: '/pages/bind-email/bind-email'
@@ -218,12 +240,17 @@ export default {
     },
     goToHelpCenter() {
       uni.navigateTo({
-        url: '/pages/help-center/help-center'
+        url: '/pages/mine/help-center'
       });
     },
     goToAuthentication() {
       uni.navigateTo({
         url: '/pages/authentication/authentication'
+      });
+    },
+    bankcard(){
+      uni.navigateTo({
+        url: '/pages/mine/bankCard'
       });
     },
     contactCustomerService() {
@@ -239,6 +266,12 @@ export default {
         }
       });
     },
+    setting() {
+      uni.navigateTo({
+        url: '/pages/setting/setting'
+      });
+    },
+
     getUserInfo() {
       const token = uni.getStorageSync('token');
       this.$service("/api/user/GetUserInfo", "post")

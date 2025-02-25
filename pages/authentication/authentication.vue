@@ -175,21 +175,28 @@ export default {
         let res = await this.$service("/api/user/GetAuthentication", "post")
         res = res.data
         if (res.code === 0) {
-          if(res.data == '已认证' || res.data == 'auth.authentication_approved'){
-            this.isVerified = true
-            this.isRejected = false
-          } else if(res.data == '未认证' || res.data == 'auth.authentication_pending'){
-            this.isVerified = false
-            this.isRejected = false
-          } else if(res.data.status === 'error') {
-            this.isRejected = true
-            this.isVerified = false
-            this.refusedMsg = res.data.refused_msg
+          // 确保 res.data 是对象
+          if(typeof res.data === 'string') {
+            if(res.data === '已认证' || res.data === 'auth.authentication_approved') {
+              this.isVerified = true
+              this.isRejected = false
+            } else if(res.data === '未认证' || res.data === 'auth.authentication_pending') {
+              this.isVerified = false
+              this.isRejected = false
+            }
+          } else if(typeof res.data === 'object') {
+            if(res.data.status === 'error') {
+              this.isRejected = true
+              this.isVerified = false
+              this.refusedMsg = res.data.refused_msg
+            }
+            // 只有当返回数据是对象时才更新 formData
+            let types = this.nationalities
+            this.verification_type = res.data.verification_type
+            this.nationalityIndex = types.indexOf(res.data.nationality)
+            // 合并数据而不是直接赋值
+            Object.assign(this.formData, res.data)
           }
-          let types = this.nationalities
-          this.verification_type = res.data.verification_type
-          this.nationalityIndex =  types.indexOf(res.data.nationality)
-          this.formData = res.data
         }
       } catch (err) {
         uni.showToast({
@@ -199,9 +206,12 @@ export default {
       }
     },
 
-
     handleNationalityChange(e) {
       this.nationalityIndex = e.detail.value
+      // 确保 formData 是对象
+      if(typeof this.formData === 'string') {
+        this.formData = {}
+      }
       this.formData.nationality = this.nationalities[this.nationalityIndex]
     },
     async chooseImage(type) {
@@ -218,108 +228,153 @@ export default {
           }
         }[type]
 
-        // 显示提示
-        uni.showModal({
-          title : '上传提示',
-          content: tipConfig.content,
-          success: async (res) => {
-            if (res.confirm) {
-              let res = await uni.chooseImage({
-                count: 1,
-                sizeType: ['compressed'],
-                sourceType: ['album', 'camera']
-              })
-              // res = res[1]
-              const filePath = res.tempFilePaths[0]
+        const modalRes = await new Promise((resolve) => {
+          uni.showModal({
+            title: '上传提示',
+            content: tipConfig.content,
+            success: resolve
+          })
+        })
 
-              uni.showLoading({
-                title: '上传中'
-              })
+        if (!modalRes.confirm) return
 
-              try {
-                const uploadRes = await uploadFile(filePath, 'other')
-                //对象转成数组
-                const img_url = uploadRes.img_url
-                const api_url = uploadRes.api_url
-                if (img_url && api_url) {
-                  switch(type) {
-                    case 'front':
-                      this.formData.front_image = img_url
-                      this.formData.api_front_image = api_url
-                      break
-                    case 'back':
-                      this.formData.back_image = img_url
-                      this.formData.api_back_image = api_url
-                      break
-                    case 'handheld':
-                      this.formData.handheld_image  = img_url
-                      this.formData.api_handheld_image = api_url
-                      break
-                  }
-                  uni.showToast({
-                    title: '上传成功',
-                    icon: 'success'
-                  })
-                } else {
-                  throw new Error('上传失败')
-                }
-              } catch (error) {
-                uni.showToast({
-                  title: error.message || this.$t('verification.uploadFailed'),
-                  icon: 'none'
-                })
-              } finally {
-                uni.hideLoading()
-              }
+        const imageRes = await uni.chooseImage({
+          count: 1,
+          sizeType: ['compressed'],
+          sourceType: ['album', 'camera']
+        })
+
+        const filePath = imageRes.tempFilePaths[0]
+
+        uni.showLoading({
+          title: '上传中'
+        })
+
+        try {
+          const uploadRes = await uploadFile(filePath, 'other')
+          
+          // 添加调试日志
+          console.log('uploadRes:', uploadRes)
+          console.log('typeof uploadRes:', typeof uploadRes)
+
+          // 如果返回的是字符串，尝试解析 JSON
+          let processedRes = uploadRes
+          if (typeof uploadRes === 'string') {
+            try {
+              processedRes = JSON.parse(uploadRes)
+            } catch (e) {
+              console.error('JSON parse error:', e)
+              throw new Error('上传返回格式错误')
             }
           }
-        })
-      } catch (err) {
-        console.error('选择图片失败:', err)
+
+          // 检查处理后的响应
+          console.log('processedRes:', processedRes)
+
+          if (!processedRes || typeof processedRes !== 'object') {
+            throw new Error('上传返回格式错误')
+          }
+
+          const img_url = processedRes.img_url || processedRes.imgUrl || processedRes.url
+          const api_url = processedRes.api_url || processedRes.apiUrl || processedRes.path
+
+          if (!img_url || !api_url) {
+            throw new Error('上传返回数据不完整')
+          }
+
+          // 更新对应的图片
+          switch(type) {
+            case 'front':
+              this.formData.front_image = img_url
+              this.formData.api_front_image = api_url
+              break
+            case 'back':
+              this.formData.back_image = img_url
+              this.formData.api_back_image = api_url
+              break
+            case 'handheld':
+              this.formData.handheld_image = img_url
+              this.formData.api_handheld_image = api_url
+              break
+          }
+
+          uni.showToast({
+            title: '上传成功',
+            icon: 'success'
+          })
+        } catch (error) {
+          console.error('上传错误:', error)
+          uni.showToast({
+            title: error.message || '上传失败',
+            icon: 'none'
+          })
+        } finally {
+          uni.hideLoading()
+        }
+      } catch (error) {
+        console.error('选择图片错误:', error)
         uni.showToast({
-          title: this.$t('verification.uploadFailed'),
+          title: '选择图片失败',
           icon: 'none'
         })
       }
     },
     async handleSubmit() {
-      console.log(this.formData)
       if (!this.isFormValid) return
+
       try {
         uni.showLoading({
           title: this.$t('submitting')
         })
-        this.$service("/api/user/Authentication", "post", this.formData)
-            .then((res) => {
-              res = res.data;
-              if (res.code === 0) {
-                  uni.showToast({
-                    title: '提交成功',
-                    icon: 'success'
-                  })
-                  setTimeout(() => {
-                    uni.navigateBack()
-                  }, 1500)
-              } else if (res.code == 1) {
-                uni.showToast({
-                  title: res.message,
-                  icon: 'none'
-                });
-              }
-            }).catch((err) => {
-          // 处理异常
+
+        // 检查必要的数据
+        if (!this.formData || typeof this.formData !== 'object') {
+          throw new Error('表单数据无效')
+        }
+
+        const res = await this.$service("/api/user/Authentication", "post", this.formData)
+        
+        if (res.data && res.data.code === 0) {
           uni.showToast({
-            title: '请求失败，请稍后再试',
-            icon: 'none'
-          });
-        });
-        uni.hideLoading()
+            title: '提交成功',
+            icon: 'success'
+          })
+          
+          // 更新状态
+          this.isVerified = true
+          this.isRejected = false
+          
+          setTimeout(() => {
+            uni.navigateBack()
+          }, 1500)
+        } else if (res.data && res.data.code === 1) {
+          // 处理已提交过的情况
+          uni.showToast({
+            title: '正在认证中',
+            icon: 'none',
+            duration: 2000
+          })
+        } else {
+          throw new Error(res.data?.message || '提交失败')
+        }
       } catch (error) {
+        console.error('提交错误:', error)
+        // 如果是数组索引错误，显示"已经提交过"
+        if (error.message && error.message.includes('Undefined array key')) {
+          uni.showToast({
+            title: '已经提交过',
+            icon: 'none',
+            duration: 2000
+          })
+        } else {
+          uni.showToast({
+            title: error.message || '提交失败，请稍后重试',
+            icon: 'none',
+            duration: 2000
+          })
+        }
+      } finally {
         uni.hideLoading()
-        uni.showToast({
-          title: error.message || this.$t('submitFailed'),
-          icon: 'none'
-        })
       }
     }
   }

@@ -10,8 +10,8 @@ export const API_ENDPOINTS = {
 // 环境配置
 export const ENV = {
   development: {
-    // API_BASE_URL: 'http://www.jiuzhouapi.isexgn.com',
-    API_BASE_URL: 'http://www.jiuzhou.com',
+    API_BASE_URL: 'http://www.jiuzhouapi.isexgn.com',
+    // API_BASE_URL: 'http://www.jiuzhou.com',
 
   },
   production: {

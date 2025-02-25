@@ -600,6 +600,7 @@ export default {
     gap: 30rpx;
 
     .order-book {
+      // width: 80%;
       flex: 1;
       background-color: $bg-secondary;
       border-radius: 20rpx;
@@ -757,12 +758,12 @@ export default {
     }
     
     .main-content {
-      flex-direction: column;
+      flex-direction: column; 
       
-      .order-book,
-      .trading-form {
-        width: 100%;
-      }
+      // .order-book,
+      // .trading-form {
+      //   width: 100%;
+      // }
     }
   }
 }

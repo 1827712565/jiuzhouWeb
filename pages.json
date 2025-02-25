@@ -123,6 +123,78 @@
 				"backgroundColor": "#1c1c1c",
 				"navigationStyle": "custom"
 			}
+		},
+		{
+			"path": "pages/setting/setting",
+			"style": {
+				"navigationBarTitleText": "设置",
+				"navigationBarBackgroundColor": "#1a1a1a",
+				"navigationBarTextStyle": "white"
+			}
+		},
+		{
+			"path": "pages/setting/privacy",
+			"style": {
+				"navigationBarTitleText": "隐私协议",
+				"navigationBarBackgroundColor": "#1a1a1a",
+				"navigationBarTextStyle": "white"
+			}
+		},
+		{
+			"path": "pages/setting/versions",
+			"style": {
+				"navigationBarTitleText": "版本信息",
+				"navigationBarBackgroundColor": "#1a1a1a",
+				"navigationBarTextStyle": "white"
+			}
+		},
+		{
+			"path": "pages/setting/aboutUs",
+			"style": {
+				"navigationBarTitleText": "关于我们",
+				"navigationBarBackgroundColor": "#1a1a1a",
+				"navigationBarTextStyle": "white"
+			}
+		},
+		{
+			"path": "pages/mine/help-center",
+			"style": {
+				"navigationBarTitleText": "帮助中心",
+				"navigationBarBackgroundColor": "#1a1a1a",
+				"navigationBarTextStyle": "white"
+			}
+		},
+		{
+			"path": "pages/deposit/withdraw",
+			"style": {
+				"navigationBarTitleText": "提现",
+				"navigationBarBackgroundColor": "#1a1a1a",
+				"navigationBarTextStyle": "white"
+			}
+		},
+		{
+			"path": "pages/deposit/transfer",
+			"style": {
+				"navigationBarTitleText": "兑换",
+				"navigationBarBackgroundColor": "#1a1a1a",
+				"navigationBarTextStyle": "white"
+			}
+		},
+		{
+			"path": "pages/mine/bankCard",
+			"style": {
+				"navigationBarTitleText": "银行卡",
+				"navigationBarBackgroundColor": "#1a1a1a",
+				"navigationBarTextStyle": "white"
+			}
+		},
+		{
+			"path": "pages/mine/addBankCard",
+			"style": {
+				"navigationBarTitleText": "添加银行卡",
+				"navigationBarBackgroundColor": "#1a1a1a",
+				"navigationBarTextStyle": "white"
+			}
 		}
 	],
 	"globalStyle": {
@@ -163,7 +235,7 @@
 				"text": "%market%"
 			},
 			{
-				"pagePath": "pages/contract/contract",
+				"pagePath": "pages/trade/trade",
 				"iconfont": {
 					"color": "#4a4a4a",
 					"selectedColor": "#1db954",
@@ -175,7 +247,7 @@
 			},
 			{
 
-				"pagePath": "pages/trade/trade",
+				"pagePath": "pages/contract/contract",
 				"iconfont": {
 					"color": "#4a4a4a",
 					"selectedColor": "#1db954",
